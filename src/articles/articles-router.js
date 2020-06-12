@@ -18,8 +18,8 @@ articlesRouter
       .catch(next)
   })
   .post(jsonParser, (req, res, next) => {
-    const { title, content, style } = req.body
-    const newArticle = { title, content, style }; 
+    const { title, content, style, author } = req.body
+    const newArticle = { title, content, style}; 
 
     if (!title) {
            return res.status(400).json({
@@ -36,7 +36,7 @@ articlesRouter
         error: { message: `Missing 'style' in request body` }
       });
     }
-
+    newArticle.author = author
     ArticlesService.insertArticle(
       req.app.get('db'),
       newArticle
@@ -77,6 +77,7 @@ articlesRouter
       title: xss(res.article.title), // sanitize title
       content: xss(res.article.content), // sanitize content
       date_published: res.article.date_published,
+      author: res.article.author
     });
   })
   .delete((req, res, next) => {
@@ -90,8 +91,8 @@ articlesRouter
            .catch(next)
     })
   .patch(jsonParser, (req, res, next) => {
-        const { title, content, style } = req.body
-        const articleToUpdate = { title, content, style }
+        const { title, content, style} = req.body
+        const articleToUpdate = { title, content, style}
 
         const numberOfValues = Object.values(articleToUpdate).filter(Boolean).length
           if (numberOfValues === 0) {
